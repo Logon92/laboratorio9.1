@@ -29,7 +29,7 @@
         { nombre: 'huevos', precio: 1.20, tipoIVA: 0.10 },
         { nombre: 'aceite', precio: 3.00, tipoIVA: 0.21 },
         // Agrega más productos aquí
-    ];
+    ]; 
 
     // Función para llenar el select automáticamente
     function inicializarSelectProductos() {
@@ -84,6 +84,30 @@
         <td><b>${precioConIVA.toFixed(2)} €</b></td>
         `;
         ticketBody.appendChild(nuevaFila);
+        actualizarTotales();
+    }
+
+    function actualizarTotales() {
+        const filas = document.querySelectorAll('#ticket-body tr');
+    
+        let totalSinIVA = 0;
+        let totalIVA = 0;
+        let totalConIVA = 0;
+    
+        filas.forEach(fila => {
+            const celdas = fila.querySelectorAll('td');
+            const precioSinIVA = parseFloat(celdas[6].textContent!.replace(' €', ''));
+            const precioConIVA = parseFloat(celdas[7].textContent!.replace(' €', ''));
+    
+            totalSinIVA += precioSinIVA;
+            totalConIVA += precioConIVA;
+        });
+    
+        totalIVA = totalConIVA - totalSinIVA;
+    
+        (document.getElementById('total-sin-iva') as HTMLParagraphElement).innerText = `${totalSinIVA.toFixed(2)} €`;
+        (document.getElementById('total-iva') as HTMLParagraphElement).innerText = `${totalIVA.toFixed(2)} €`;
+        (document.getElementById('total-con-iva') as HTMLParagraphElement).innerText = `${totalConIVA.toFixed(2)} €`;
     }
     
     document.addEventListener('DOMContentLoaded', () => {
