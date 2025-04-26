@@ -1,110 +1,92 @@
-type TipoIva =
-    | "general"
-    | "reducido"
-    | "superreducidoA"
-    | "superreducidoB"
-    | "superreducidoC"
-    | "sinIva";
+    interface LineaTicket {
+        nombre: string;
+        precio: number;
+        tipoIVA: number;
+    }
 
-interface Producto {
-    nombre: string;
-    precio: number;
-    tipoIva: TipoIva;
-}
+    interface descripcionIva {
+        tipo: string;
+        porcentaje: number;
+    }
 
-interface LineaTicket {
-    producto: Producto;
-    cantidad: number;
-}
+    const tipoIva: descripcionIva[] = [
+        {tipo: 'general', porcentaje: 0.21},
+        {tipo: 'reducido', porcentaje: 0.10},
+        {tipo: 'superreducidoA', porcentaje: 0.05},
+        {tipo: 'superreducidoB', porcentaje: 0.04},
+        {tipo: 'superreducidoC', porcentaje: 0.00},
+        {tipo: 'sinIva', porcentaje: 0.00},
+    ];
+    
+    // Tu lista de productos
+    const productos: LineaTicket[] = [
+        { nombre: 'legumbres', precio: 2.00, tipoIVA: 0.21 },
+        { nombre: 'perfume', precio: 20.00, tipoIVA: 0.21 },
+        { nombre: 'lasa√±a', precio: 5.00, tipoIVA: 0.05 },
+        { nombre: 'pan', precio: 1.00, tipoIVA: 0.04 },
+        { nombre: 'leche', precio: 0.80, tipoIVA: 0.00 },
+        { nombre: 'queso', precio: 2.50, tipoIVA: 0.04 },
+        { nombre: 'huevos', precio: 1.20, tipoIVA: 0.10 },
+        { nombre: 'aceite', precio: 3.00, tipoIVA: 0.21 },
+        // Agrega m√°s productos aqu√≠
+    ];
 
-interface ResultadoLineaTicket {
-    nombre: string;
-    cantidad: number;
-    precioSinIva: number;
-    tipoIva: TipoIva;
-    precioConIva: number;
-}
-
-interface ResultadoTotalTicket {
-    totalSinIva: number;
-    totalConIva: number;
-    totalIva: number;
-}
-
-interface TotalPorTipoIva {
-    tipoIva: TipoIva;
-    cuantia: number;
-}
-
-interface TicketFinal {
-    lineas: ResultadoLineaTicket[];
-    total: ResultadoTotalTicket;
-    desgloseIva: TotalPorTipoIva[];
-}
-
-const ivaPorTipo: Record<TipoIva, number> = {
-    general: 21,
-    reducido: 10,
-    superreducidoA: 5,
-    superreducidoB: 4,
-    superreducidoC: 0,
-    sinIva: 0,
-};
-
-const productos: LineaTicket[] = [
-    {
-        producto: { nombre: "Legumbres", precio: 2, tipoIva: "general" },
-        cantidad: 2,
-    },
-    {
-        producto: { nombre: "Perfume", precio: 20, tipoIva: "general" },
-        cantidad: 3,
-    },
-    {
-        producto: { nombre: "Leche", precio: 1, tipoIva: "superreducidoC" },
-        cantidad: 6,
-    },
-    {
-        producto: { nombre: "LasaÒa", precio: 5, tipoIva: "superreducidoA" },
-        cantidad: 1,
-    },
-];
-
-    function calcularTicket2() {
-        const productoInput = document.getElementById('producto-input') as HTMLInputElement;
+    // Funci√≥n para llenar el select autom√°ticamente
+    function inicializarSelectProductos() {
+        const productoSelect = document.getElementById('producto-select') as HTMLSelectElement;
+    
+        productos.forEach(producto => {
+        const option = document.createElement('option');
+        option.value = producto.nombre;
+        option.textContent = producto.nombre.charAt(0).toUpperCase() + producto.nombre.slice(1); // Capitaliza
+        productoSelect.appendChild(option);
+        });
+    }
+    
+    function calcularTicket() {
+        const productoSelect = document.getElementById('producto-select') as HTMLSelectElement;
         const cantidadInput = document.getElementById('cantidad-input') as HTMLInputElement;
         const ticketBody = document.getElementById('ticket-body') as HTMLTableSectionElement;
     
-        const nombreProducto = productoInput.value.trim();
+        const nombreProducto = productoSelect.value;
         const cantidad = parseInt(cantidadInput.value.trim());
     
         if (!nombreProducto || isNaN(cantidad) || cantidad <= 0) {
-        alert('Por favor ingresa un nombre de producto y una cantidad v·lida.');
+        alert('Por favor selecciona un producto y una cantidad v√°lida.');
         return;
         }
     
-        // AquÌ defines el precio del producto. (puedes hacer una b˙squeda en una lista, por ahora fijo:)
-        const precioUnitario = 100; // Puedes personalizarlo o hacer una b˙squeda m·s avanzada.
+        // Buscar el producto en la lista
+        const productoEncontrado = productos.find(p => p.nombre === nombreProducto);
     
-        // C·lculos
-        const precioSinIVA = precioUnitario * cantidad;
-        const tipoIVA = 0.21; // IVA del 21%
-        const precioConIVA = precioSinIVA * (1 + tipoIVA);
+        if (!productoEncontrado) {
+        alert('Producto no encontrado.');
+        return;
+        }
+    
+        // C√°lculos
+        const precioSinIVA = productoEncontrado.precio * cantidad;
+        const precioConIVA = precioSinIVA * (1 + productoEncontrado.tipoIVA);
+        const precioUnidad = productoEncontrado.precio;
+        const totalIva = precioConIVA - precioSinIVA;
+        const ivaUnidad = productoEncontrado.tipoIVA * productoEncontrado.precio;
     
         // Agregar fila a la tabla
         const nuevaFila = document.createElement('tr');
         nuevaFila.innerHTML = `
-        <td>${nombreProducto}</td>
+        <td>${productoEncontrado.nombre}</td>
         <td>${cantidad}</td>
-        <td>${precioSinIVA.toFixed(2)} &#8364</td>
-        <td>${(tipoIVA * 100).toFixed(0)}%</td>
-        <td>${precioConIVA.toFixed(2)} &#8364</td>
+        <td>${precioUnidad.toFixed(2)} ‚Ç¨</td>
+        <td>${(productoEncontrado.tipoIVA * 100).toFixed(0)}%</td>
+        <td>${ivaUnidad.toFixed(2)} ‚Ç¨</td>
+        <td>${totalIva.toFixed(2)} ‚Ç¨</td>
+        <td>${precioSinIVA.toFixed(2)} ‚Ç¨</td>
+        <td><b>${precioConIVA.toFixed(2)} ‚Ç¨</b></td>
         `;
         ticketBody.appendChild(nuevaFila);
-    
     }
-
     
-    
-    // Para que el botÛn funcione:
-    (window as any).calcularTicket2 = calcularTicket2;
+    document.addEventListener('DOMContentLoaded', () => {
+        inicializarSelectProductos();
+        (window as any).calcularTicket = calcularTicket;
+    });
