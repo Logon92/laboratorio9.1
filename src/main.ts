@@ -18,7 +18,6 @@
         {tipo: 'sinIva', porcentaje: 0.00},
     ];
     
-    // Tu lista de productos
     const productos: LineaTicket[] = [
         { nombre: 'legumbres', precio: 2.00, tipoIVA: 0.21 },
         { nombre: 'perfume', precio: 20.00, tipoIVA: 0.21 },
@@ -27,11 +26,9 @@
         { nombre: 'leche', precio: 0.80, tipoIVA: 0.00 },
         { nombre: 'queso', precio: 2.50, tipoIVA: 0.04 },
         { nombre: 'huevos', precio: 1.20, tipoIVA: 0.10 },
-        { nombre: 'aceite', precio: 3.00, tipoIVA: 0.21 },
-        // Agrega más productos aquí
+        { nombre: 'aceite', precio: 3.00, tipoIVA: 0.21 }
     ]; 
 
-    // Función para llenar el select automáticamente
     function inicializarSelectProductos() {
         const productoSelect = document.getElementById('producto-select') as HTMLSelectElement;
     
