@@ -17,8 +17,8 @@ export interface LineaTicket {
     cantidad: number;
 }
 
-export const obtenerPorcentajeIva = (tipo: Producto['tipoIva']): number => {
-    switch (tipo) {
+export const obtenerPorcentajeIva = (tipoIva: TipoIva): number => {
+    switch (tipoIva) {
         case 'general':
             return 0.21;
         case 'reducido':
